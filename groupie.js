@@ -219,7 +219,7 @@ const updateStore = updates => {
         case 'lastCandle': {
           const y = store.lineData.y.slice()
           y.push(updates[key].tickBuy + updates[key].tickSell)
-          while (y.length > 360) {
+          while (y.length > 100) {
             y.shift()
           }
           const min = Math.min(...y)
