@@ -100,7 +100,7 @@ const boomshakalaka = () => {
       }
       const volumeTickBuy = candle.volumeBuy / candle.tickBuy
       const volumeTickSell = candle.volumeSell / candle.tickSell
-      log({ message: `${chalk[colorPrice](currency.format(candle.price))} ${chalk.gray(`[${chalk[colorClose](candle.priceClose.toFixed(2))}|${chalk[colorClose](candle.range.toFixed(1))}] [${chalk.yellow(candle.volumeBuy.toFixed(2))}/${chalk.yellow(candle.tickBuy)}=${chalk.cyan(volumeTickBuy.toFixed(2))}] [${chalk.yellow(candle.volumeSell.toFixed(2))}/${chalk.yellow(candle.tickSell)}=${chalk.magenta(volumeTickSell.toFixed(2))}] ${(volumeTickBuy / volumeTickSell).toFixed(2)}`)}`, type: 'info' })
+      log({ message: `${chalk[colorPrice](currency.format(candle.price))} ${chalk.white(`[${chalk[colorClose](candle.priceClose.toFixed(2))}|${chalk[colorClose](candle.range.toFixed(1))}] [${chalk.yellow(candle.volumeBuy.toFixed(2))}/${chalk.yellow(candle.tickBuy)}=${chalk.cyan(volumeTickBuy.toFixed(2))}] [${chalk.yellow(candle.volumeSell.toFixed(2))}/${chalk.yellow(candle.tickSell)}=${chalk.magenta(volumeTickSell.toFixed(2))}] ${(volumeTickBuy / volumeTickSell).toFixed(2)}`)}`, type: 'info' })
       updateStore({ lastCandle: candle })
     } catch (error) {
       log({ message: error.toString(), type: 'error' })
@@ -157,7 +157,7 @@ const draw = () => {
 }
 
 const log = ({ message, type = '' }) => {
-  updateStore({ message: `${logType(type)}${type !== '' ? `${chalk.gray(format(new Date(), 'EEE dd/MM HH:mm:ss'))} ` : ''}${message}` })
+  updateStore({ message: `${logType(type)}${type !== '' ? `${chalk.white(format(new Date(), 'EEE dd/MM HH:mm:ss'))} ` : ''}${message}` })
 }
 
 const logType = type => {
@@ -248,7 +248,7 @@ const updateStore = updates => {
             store.id = newId
             store.trades = []
           }
-          updateStore({ directionColor: trade.price > lastTrade?.price ? 'green' : trade.price < lastTrade?.price ? 'red' : directionColor ?? 'gray', lastTrade: trade })
+          updateStore({ directionColor: trade.price > lastTrade?.price ? 'green' : trade.price < lastTrade?.price ? 'red' : directionColor ?? 'white', lastTrade: trade })
           store.trades.push(trade)
           break
         }
@@ -282,7 +282,7 @@ program
         boxes: {},
         currency,
         lineData: { x: [], y: [] },
-        messages: [chalk.gray(`${chalk.green(description.replace('.', ''))} v${version} - ${chalk.cyan('q')}uit`)],
+        messages: [chalk.white(`${chalk.green(description.replace('.', ''))} v${version} - ${chalk.cyan('q')}uit`)],
         screen,
         size: size > 0 ? size * 1000 : 60 * 1000,
         symbol,
