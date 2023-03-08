@@ -4,7 +4,7 @@ Binance grouped times & sales.
 
 ### Requires
 
-- [Node v18.14.2](https://nodejs.org/)
+- [Node v18.15.0](https://nodejs.org/)
 - npm v9.6.0
 
 ### Installation
