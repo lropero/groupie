@@ -12,7 +12,7 @@
     "lint": "npx prettier --write . && npx standard --fix",
     "nuke": "npm run clean && npm cache verify && npm install",
     "sort": "npx sort-package-json",
-    "start": "node groupie.js BTCUSDT -s 10"
+    "start": "node groupie.js BTCUSDT -s 15"
   },
   "dependencies": {
     "blessed": "0.1.81",
@@ -24,11 +24,11 @@
     "figures": "5.0.0",
     "jsonfile": "6.1.0",
     "lodash": "4.17.21",
-    "ws": "8.12.1"
+    "ws": "8.13.0"
   },
   "devDependencies": {
-    "prettier": "2.8.4",
-    "rimraf": "4.3.1",
+    "prettier": "2.8.6",
+    "rimraf": "4.4.0",
     "sort-package-json": "2.4.1",
     "standard": "17.0.0",
     "upgradeps": "2.0.5"

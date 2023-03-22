@@ -7,10 +7,12 @@ import contrib from 'blessed-contrib'
 import figures from 'figures'
 import jsonfile from 'jsonfile'
 import WebSocket from 'ws'
+import { exec } from 'child_process'
 import { format } from 'date-fns'
 import { program } from 'commander'
 
 const BINANCE = 'wss://fstream.binance.com/ws'
+const PLAY = { darwin: 'afplay <SOUND>', win32: '"C:\\Program Files\\VideoLAN\\VLC\\vlc.exe" --intf=null --play-and-exit <SOUND>' }
 
 const store = {}
 
@@ -175,6 +177,10 @@ const logType = type => {
   }
 }
 
+const play = sound => {
+  PLAY[process.platform] && exec(PLAY[process.platform].replace('<SOUND>', `mp3/${sound}.mp3`))
+}
+
 const resetWatchdog = () => {
   const { timers } = store
   timers.reconnect && clearTimeout(timers.reconnect)
@@ -189,11 +195,29 @@ const resetWatchdog = () => {
   }, 60000)
 }
 
+const setAlert = () => {
+  const { screen } = store
+  const $ = blessed.box({ content: '$', height: 1, left: 40, parent: screen, style: { bg: 'magenta' }, top: 2, width: 1 })
+  const input = blessed.textbox({ height: 1, inputOnFocus: true, left: 41, parent: screen, style: { bg: 'magenta' }, top: 2, width: 9 })
+  input.on('cancel', () => {
+    $.destroy()
+    input.destroy()
+  })
+  input.on('submit', () => {
+    const alert = parseFloat(input.getValue().replace(',', '.'))
+    updateStore({ alert: alert > 0 ? alert : 0 })
+    $.destroy()
+    input.destroy()
+  })
+  input.focus()
+}
+
 const start = title => {
   const { screen } = store
   addBox('display')
   addBox('info')
   addBox('line')
+  screen.key('a', setAlert)
   screen.key('q', () => process.exit())
   screen.on(
     'resize',
@@ -216,6 +240,18 @@ const updateStore = updates => {
       store[key] = updates[key]
     } else {
       switch (key) {
+        case 'alert': {
+          const { currency, header } = store
+          const alert = updates[key]
+          if (alert > 0) {
+            store.alert = alert
+            store.messages[0] = `${header} ${chalk.magenta(currency.format(updates[key]))}`
+          } else {
+            delete store.alert
+            store.messages[0] = `${header}`
+          }
+          break
+        }
         case 'lastCandle': {
           const y = store.lineData.y.slice()
           y.push(updates[key].tickBuy + updates[key].tickSell)
@@ -234,9 +270,15 @@ const updateStore = updates => {
           break
         }
         case 'trade': {
-          const { directionColor, id, lastTrade, size } = store
+          const { alert, directionColor, id, lastTrade, size } = store
           const { m: marketMaker, p: price, q: quantity, T: tradeTime } = updates[key]
           const trade = { marketMaker, price: parseFloat(price), quantity: parseFloat(quantity), tradeTime }
+          if (alert && lastTrade) {
+            if ((lastTrade.price < alert && trade.price >= alert) || (lastTrade.price > alert && trade.price <= alert)) {
+              play('alert')
+              updateStore({ alert: 0 })
+            }
+          }
           const newId = Math.floor(trade.tradeTime / size)
           if (!id) {
             store.id = `${newId}`
@@ -275,14 +317,16 @@ program
     try {
       const { description, name, version } = await jsonfile.readFile('./package.json')
       const currency = new Intl.NumberFormat('en-US', { currency: 'USD', minimumFractionDigits: 2, style: 'currency' })
+      const header = chalk.white(`${chalk.green(description.replace('.', ''))} v${version} - ${chalk.cyan('a')}lert ${chalk.cyan('q')}uit`)
       const screen = blessed.screen({ forceUnicode: true, fullUnicode: true, smartCSR: true })
       const size = parseInt(options.size ?? 60, 10)
       const webSocket = await createWebSocket()
       updateStore({
         boxes: {},
         currency,
+        header,
         lineData: { x: [], y: [] },
-        messages: [chalk.white(`${chalk.green(description.replace('.', ''))} v${version} - ${chalk.cyan('q')}uit`)],
+        messages: [header],
         screen,
         size: size > 0 ? size * 1000 : 60 * 1000,
         symbol,
