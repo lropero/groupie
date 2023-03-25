@@ -20,22 +20,22 @@ const addBox = type => {
   switch (type) {
     case 'display': {
       const { symbol } = store
-      const priceBox = blessed.box({ height: 3, left: symbol.length * 4 + 1, style: { bg: 'black' }, top: 0 })
-      const symbolBox = blessed.box({ height: 3, style: { bg: 'black' }, top: 0 })
+      const priceBox = blessed.box({ height: 2, left: symbol.length * 4 + 1, style: { bg: 'black' }, top: 0 })
+      const symbolBox = blessed.box({ height: 2, style: { bg: 'black' }, top: 0 })
       append({ box: symbolBox, type: 'symbol' })
       append({ box: priceBox, type: 'price' })
       break
     }
     case 'info': {
       const { screen } = store
-      const logBox = blessed.box({ style: { bg: 'black' }, top: 2, width: screen.width })
-      append({ box: logBox, type })
+      const box = blessed.box({ style: { bg: 'black' }, top: 2, width: screen.width })
+      append({ box, type })
       break
     }
     case 'line': {
       const { screen } = store
-      const lineBox = contrib.line({ height: 20, style: { baseline: 'cyan', bg: 'black', text: 'black' }, top: screen.height - 18, wholeNumbersOnly: true, width: screen.width })
-      append({ box: lineBox, type })
+      const box = contrib.line({ height: 20, style: { baseline: 'cyan', bg: 'black', text: 'black' }, top: screen.height - 18, wholeNumbersOnly: true, width: screen.width })
+      append({ box, type })
       break
     }
   }
@@ -197,8 +197,8 @@ const resetWatchdog = () => {
 
 const setAlert = () => {
   const { screen } = store
-  const $ = blessed.box({ content: '$', height: 1, left: 40, parent: screen, style: { bg: 'magenta' }, top: 2, width: 1 })
-  const input = blessed.textbox({ height: 1, inputOnFocus: true, left: 41, parent: screen, style: { bg: 'magenta' }, top: 2, width: 9 })
+  const $ = blessed.box({ content: '$', height: 1, left: 51, parent: screen, style: { bg: 'magenta' }, top: 2, width: 1 })
+  const input = blessed.textbox({ height: 1, inputOnFocus: true, left: 52, parent: screen, style: { bg: 'magenta' }, top: 2, width: 11 })
   input.on('cancel', () => {
     $.destroy()
     input.destroy()
@@ -218,7 +218,7 @@ const start = title => {
   addBox('info')
   addBox('line')
   screen.key('a', setAlert)
-  screen.key('q', () => process.exit())
+  screen.key('q', process.exit)
   screen.on(
     'resize',
     _.debounce(() => {
