@@ -197,9 +197,9 @@ const resetWatchdog = () => {
 }
 
 const setAlert = () => {
-  const { screen } = store
-  const $ = blessed.box({ content: '$', height: 1, left: 51, parent: screen, style: { bg: 'magenta' }, top: 2, width: 1 })
-  const input = blessed.textbox({ height: 1, inputOnFocus: true, left: 52, parent: screen, style: { bg: 'magenta' }, top: 2, width: 11 })
+  const { screen, size } = store
+  const $ = blessed.box({ content: '$', height: 1, left: 50 + `${size}`.length, parent: screen, style: { bg: 'blue' }, top: 2, width: 1 })
+  const input = blessed.textbox({ height: 1, inputOnFocus: true, left: 51 + `${size}`.length, parent: screen, style: { bg: 'blue' }, top: 2, width: 11 })
   input.on('cancel', () => {
     $.destroy()
     input.destroy()
@@ -242,14 +242,16 @@ const updateStore = updates => {
     } else {
       switch (key) {
         case 'alert': {
-          const { currency, header } = store
-          const alert = updates[key]
-          if (alert > 0) {
-            store.alert = alert
-            store.messages[0] = `${header} ${chalk.magenta(currency.format(updates[key]))}`
-          } else {
-            delete store.alert
-            store.messages[0] = `${header}`
+          const { currency, header, lastTrade } = store
+          if (lastTrade) {
+            const alert = updates[key]
+            if (alert > 0) {
+              store.alert = alert
+              store.messages[0] = `${header} ${chalk[alert > lastTrade.price ? 'cyan' : 'magenta'](currency.format(updates[key]))}`
+            } else {
+              delete store.alert
+              store.messages[0] = `${header}`
+            }
           }
           break
         }
@@ -318,9 +320,9 @@ program
     try {
       const { description, name, version } = await jsonfile.readFile('./package.json')
       const currency = new Intl.NumberFormat('en-US', { currency: 'USD', minimumFractionDigits: 2, style: 'currency' })
-      const header = chalk.white(`${chalk.green(description.replace('.', ''))} v${version} - ${chalk.cyan('a')}lert ${chalk.cyan('q')}uit`)
       const screen = blessed.screen({ forceUnicode: true, fullUnicode: true, smartCSR: true })
       const size = parseInt(options.size ?? 60, 10) > 0 ? parseInt(options.size ?? 60, 10) : 60
+      const header = chalk.white(`${chalk.green(description.replace('.', ''))} v${version} - ${chalk.cyan('a')}lert ${chalk.cyan('q')}uit ${chalk.yellow(`${size}s`)}`)
       const webSocket = await createWebSocket()
       updateStore({
         boxes: {},
