@@ -12,7 +12,11 @@
     "lint": "npx prettier --write . && npx standard --fix",
     "nuke": "npm run clean && npm cache verify && npm install",
     "sort": "npx sort-package-json",
-    "start": "node groupie.js BTCUSDT -s 15"
+    "start": "node groupie.js BTCUSDT",
+    "start:15s": "node groupie.js BTCUSDT -s 15",
+    "start:3m": "node groupie.js BTCUSDT -s 180",
+    "start:5m": "node groupie.js BTCUSDT -s 300",
+    "start:15m": "node groupie.js BTCUSDT -s 900"
   },
   "dependencies": {
     "blessed": "0.1.81",

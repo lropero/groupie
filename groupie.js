@@ -102,7 +102,8 @@ const boomshakalaka = () => {
       }
       const volumeTickBuy = candle.volumeBuy / candle.tickBuy
       const volumeTickSell = candle.volumeSell / candle.tickSell
-      log({ message: `${chalk[colorPrice](currency.format(candle.price))} ${chalk.white(`[${chalk[colorClose](candle.priceClose.toFixed(2))}|${chalk[colorClose](candle.range.toFixed(1))}] [${chalk.yellow(candle.volumeBuy.toFixed(2))}/${chalk.yellow(candle.tickBuy)}=${chalk.cyan(volumeTickBuy.toFixed(2))}] [${chalk.yellow(candle.volumeSell.toFixed(2))}/${chalk.yellow(candle.tickSell)}=${chalk.magenta(volumeTickSell.toFixed(2))}] ${(volumeTickBuy / volumeTickSell).toFixed(2)}`)}`, type: 'info' })
+      const polarvol = (volumeTickBuy - volumeTickSell) * (candle.tickBuy + candle.tickSell)
+      log({ message: `${chalk[colorPrice](currency.format(candle.price))} ${chalk.white(`[${chalk[colorClose](candle.priceClose.toFixed(2))}|${chalk[colorClose](candle.range.toFixed(1))}] [${chalk.yellow(candle.volumeBuy.toFixed(2))}/${chalk.yellow(candle.tickBuy)}=${chalk.cyan(volumeTickBuy.toFixed(2))}] [${chalk.yellow(candle.volumeSell.toFixed(2))}/${chalk.yellow(candle.tickSell)}=${chalk.magenta(volumeTickSell.toFixed(2))}] ${chalk.gray(polarvol.toFixed(2))}`)}`, type: 'info' })
       updateStore({ lastCandle: candle })
     } catch (error) {
       log({ message: error.toString(), type: 'error' })
@@ -319,7 +320,7 @@ program
       const currency = new Intl.NumberFormat('en-US', { currency: 'USD', minimumFractionDigits: 2, style: 'currency' })
       const header = chalk.white(`${chalk.green(description.replace('.', ''))} v${version} - ${chalk.cyan('a')}lert ${chalk.cyan('q')}uit`)
       const screen = blessed.screen({ forceUnicode: true, fullUnicode: true, smartCSR: true })
-      const size = parseInt(options.size ?? 60, 10)
+      const size = parseInt(options.size ?? 60, 10) > 0 ? parseInt(options.size ?? 60, 10) : 60
       const webSocket = await createWebSocket()
       updateStore({
         boxes: {},
@@ -328,7 +329,7 @@ program
         lineData: { x: [], y: [] },
         messages: [header],
         screen,
-        size: size > 0 ? size * 1000 : 60 * 1000,
+        size: size * 1000,
         symbol,
         timers: {},
         trades: [],

@@ -16,7 +16,14 @@ npm ci
 ### Usage
 
 ```sh
-node groupie.js <SYMBOL> # e.g. 'node groupie.js BTCUSDT'
+node groupie.js <SYMBOL> # e.g. 1m candles 'node groupie.js BTCUSDT'
+```
+
+```sh
+npm run start # BTCUSDT 1m candles
+npm run start:3m # BTCUSDT 3m candles
+npm run start:5m # BTCUSDT 5m candles
+npm run start:15m # BTCUSDT 15m candles
 ```
 
 ### Options
@@ -26,5 +33,5 @@ node groupie.js <SYMBOL> # e.g. 'node groupie.js BTCUSDT'
 Candle size in seconds (defaults to 60)
 
 ```sh
-node groupie.js <SYMBOL> -s 300 # 5m candles
+node groupie.js <SYMBOL> -s <seconds> # e.g. 5m candles 'node groupie.js BTCUSDT -s 300'
 ```
